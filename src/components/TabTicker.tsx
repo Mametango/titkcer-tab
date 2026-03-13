@@ -250,7 +250,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                         className={`note-bubble ${selectedNoteId === note.id ? 'selected' : ''}`}
                         style={{
                             left: `${note.position + scrollOffset}%`,
-                            top: `${(note.string - 1) * 20 + 20}px`,
+                            top: `${(note.string - 1) * 30 + 15}px`,
                             transform: 'translateY(-50%)',
                         }}
                         onClick={(e) => handleNoteClick(e, note.id)}
@@ -273,7 +273,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                 </div>
             )}
 
-            <div className="ticker-controls" style={{ position: 'absolute', top: '10px', left: '20px', display: 'flex', gap: '8px', zIndex: 20 }}>
+            <div className="ticker-controls" style={{ position: 'absolute', top: '15px', left: '20px', display: 'flex', gap: '8px', zIndex: 20 }}>
                 <button className={`hud-button ${isPaused ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setIsPaused(!isPaused); }}>
                     {isPaused ? <Play size={14} /> : <Pause size={14} />}
                 </button>

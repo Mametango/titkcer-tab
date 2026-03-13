@@ -1,6 +1,6 @@
 .tab-ticker-container {
     position: relative;
-    height: 200px;
+    height: 240px;
     width: 100%;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.2);
@@ -9,19 +9,19 @@
 
 .tab-lines {
     position: absolute;
-    top: 0;
+    top: 60px;
+    /* Leave space for controls at top */
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 20px 0;
+    padding: 0;
 }
 
 .tab-line {
-    height: 20px;
-    /* Increase height for easier clicking */
+    height: 30px;
+    /* Fixed height for consistent grid */
     background: transparent;
     width: 100%;
     position: relative;
@@ -53,8 +53,8 @@
 .scanner-line {
     position: absolute;
     left: 100px;
-    top: 0;
-    bottom: 0;
+    top: 60px;
+    bottom: 20px;
     width: 2px;
     background: linear-gradient(to bottom, transparent, var(--accent-secondary), transparent);
     box-shadow: 0 0 15px var(--accent-secondary);
@@ -63,11 +63,10 @@
 
 .notes-container {
     position: absolute;
-    top: 0;
+    top: 60px;
     left: 0;
     right: 0;
-    bottom: 0;
-    padding: 20px 0;
+    bottom: 20px;
 }
 
 .note-bubble {
