@@ -179,3 +179,129 @@
         opacity: 0.5;
     }
 }
+
+/* Modal and Save List */
+.tab-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.tab-modal {
+    width: 400px;
+    max-width: 90vw;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalScale {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.tab-modal h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px var(--accent-primary);
+}
+
+.tab-modal input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.tab-modal input:focus {
+    border-color: var(--accent-primary);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.save-list {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+}
+
+.save-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.save-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.save-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.save-date {
+    font-size: 0.75rem;
+    opacity: 0.5;
+}
+
+.empty-msg {
+    text-align: center;
+    padding: 20px;
+    opacity: 0.5;
+    font-style: italic;
+}
+
+/* Custom Scrollbar */
+.save-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.save-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
