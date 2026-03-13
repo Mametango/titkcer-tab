@@ -7,12 +7,19 @@ function App() {
   const { pitch, tabNote, isProcessing, volume, startProcessing, stopProcessing } = useAudioProcessor();
 
   const handleToggleRecording = async () => {
-    // ... same as before ...
+    if (isProcessing) {
+      stopProcessing();
+    } else {
+      try {
+        await startProcessing();
+      } catch (err) {
+        console.error("Failed to start recording:", err);
+      }
+    }
   };
 
   return (
     <div className="app-container">
-      {/* ... header ... */}
       <header className="glass">
         <div className="logo">
           <Activity className="accent-icon" />
