@@ -62,14 +62,17 @@ export function useAudioProcessor() {
                 const detectedPitch = detectorRef.current(inputData);
 
                 if (detectedPitch && detectedPitch > 50 && detectedPitch < 1200) {
+                    console.log('Detected Pitch:', detectedPitch);
                     setPitch(detectedPitch);
                     const tab = frequencyToTab(detectedPitch);
                     if (tab) {
+                        console.log('Mapped to Tab:', tab);
                         setTabNote({ string: tab.string, fret: tab.fret });
                     } else {
                         setTabNote(null);
                     }
                 } else {
+                    if (detectedPitch) console.log('Pitch out of range or weak:', detectedPitch);
                     setPitch(null);
                     setTabNote(null);
                 }
