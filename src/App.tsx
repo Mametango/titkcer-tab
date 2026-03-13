@@ -1,12 +1,23 @@
-import { useState } from 'react';
 import './App.css';
 import { Mic, Square, Settings, Guitar, Activity, Volume2 } from 'lucide-react';
 import TabTicker from './components/TabTicker';
 import { useAudioProcessor } from './hooks/useAudioProcessor';
 
 function App() {
-  const [isRecording, setIsRecording] = useState(false);
-  const { pitch, tabNote } = useAudioProcessor(isRecording);
+  const { pitch, tabNote, isProcessing, startProcessing, stopProcessing } = useAudioProcessor();
+
+  const handleToggleRecording = async () => {
+    if (isProcessing) {
+      stopProcessing();
+    } else {
+      try {
+        await startProcessing();
+      } catch (err) {
+        // Error is logged in hook, but we could add a toast here
+        console.error("Failed to start recording:", err);
+      }
+    }
+  };
 
   return (
     <div className="app-container">
@@ -17,11 +28,11 @@ function App() {
         </div>
         <div className="controls">
           <button
-            className={`premium-button ${isRecording ? 'recording' : ''}`}
-            onClick={() => setIsRecording(!isRecording)}
+            className={`premium-button ${isProcessing ? 'recording' : ''}`}
+            onClick={handleToggleRecording}
           >
-            {isRecording ? <Square size={20} /> : <Mic size={20} />}
-            {isRecording ? 'Stop Recording' : 'Start Recording'}
+            {isProcessing ? <Square size={20} /> : <Mic size={20} />}
+            {isProcessing ? 'Stop Recording' : 'Start Recording'}
           </button>
           <button className="icon-button glass">
             <Settings size={20} />
@@ -31,7 +42,7 @@ function App() {
 
       <main>
         <section className="ticker-wrapper glass">
-          <TabTicker currentNote={tabNote} isRecording={isRecording} />
+          <TabTicker currentNote={tabNote} isRecording={isProcessing} />
         </section>
 
         <section className="stats-grid">
@@ -53,7 +64,7 @@ function App() {
             <Activity size={18} className="accent-icon" />
             <div className="stat-info">
               <span className="stat-label">Status</span>
-              <span className="stat-value">{isRecording ? 'Listening...' : 'Idle'}</span>
+              <span className="stat-value">{isProcessing ? 'Listening...' : 'Idle'}</span>
             </div>
           </div>
         </section>
