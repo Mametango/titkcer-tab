@@ -240,10 +240,16 @@
 
 /* Specific adjustment for mobile layout */
 @media screen and (max-width: 600px) {
+    .tab-modal-overlay {
+        align-items: flex-start;
+        padding-top: 80px;
+        overflow-y: auto;
+    }
+
     .tab-modal {
-        position: fixed;
-        top: 20%;
-        /* Shift up to avoid keyboard overlap */
+        animation: none;
+        /* Disable animation to avoid jitter on mobile keyboard */
+        margin-bottom: 40px;
     }
 }
 
