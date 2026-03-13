@@ -487,12 +487,12 @@
     }
 
     .tab-ticker-score-area {
-        height: 180px;
+        height: 230px;
     }
 
     .tab-lines,
     .notes-container {
-        top: 15px;
-        bottom: 15px;
+        top: 20px;
+        bottom: 20px;
     }
 }
