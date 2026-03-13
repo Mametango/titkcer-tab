@@ -7,6 +7,8 @@ export function useAudioProcessor() {
     const [tabNote, setTabNote] = useState<{ string: number; fret: number } | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
 
+    const [volume, setVolume] = useState<number>(0);
+
     const audioContextRef = useRef<AudioContext | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
     const processorRef = useRef<ScriptProcessorNode | null>(null);
@@ -27,6 +29,7 @@ export function useAudioProcessor() {
         }
         setPitch(null);
         setTabNote(null);
+        setVolume(0);
         setIsProcessing(false);
     }, []);
 
@@ -59,10 +62,20 @@ export function useAudioProcessor() {
 
             processor.onaudioprocess = (e: AudioProcessingEvent) => {
                 const inputData = e.inputBuffer.getChannelData(0);
+
+                // Calculate volume (RMS)
+                let sum = 0;
+                for (let i = 0; i < inputData.length; i++) {
+                    sum += inputData[i] * inputData[i];
+                }
+                const rms = Math.sqrt(sum / inputData.length);
+                setVolume(rms);
+
                 const detectedPitch = detectorRef.current(inputData);
 
-                if (detectedPitch && detectedPitch > 50 && detectedPitch < 1200) {
-                    console.log('Detected Pitch:', detectedPitch);
+                // Threshold check: only process if volume is above 0.01
+                if (rms > 0.01 && detectedPitch && detectedPitch > 50 && detectedPitch < 1200) {
+                    console.log('Detected Pitch:', detectedPitch, 'Vol:', rms);
                     setPitch(detectedPitch);
                     const tab = frequencyToTab(detectedPitch);
                     if (tab) {
@@ -72,7 +85,9 @@ export function useAudioProcessor() {
                         setTabNote(null);
                     }
                 } else {
-                    if (detectedPitch) console.log('Pitch out of range or weak:', detectedPitch);
+                    if (rms > 0.01 && detectedPitch) {
+                        console.log('Pitch out of range:', detectedPitch);
+                    }
                     setPitch(null);
                     setTabNote(null);
                 }
@@ -92,5 +107,5 @@ export function useAudioProcessor() {
         };
     }, [stopProcessing]);
 
-    return { pitch, tabNote, isProcessing, startProcessing, stopProcessing };
+    return { pitch, tabNote, isProcessing, volume, startProcessing, stopProcessing };
 }
