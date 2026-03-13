@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 import { Mic, Square, Settings, Guitar, Activity, Volume2 } from 'lucide-react';
 import TabTicker from './components/TabTicker';

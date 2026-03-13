@@ -18,7 +18,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
     const [notes, setNotes] = useState<TabNote[]>([]);
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
     const [isPaused, setIsPaused] = useState(false);
-    const requestRef = useRef<number>();
+    const requestRef = useRef<number>(undefined);
     const lastNoteRef = useRef<{ string: number; fret: number } | null>(null);
     const lastNoteTime = useRef<number>(0);
     const containerRef = useRef<HTMLDivElement>(null);
