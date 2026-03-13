@@ -104,6 +104,30 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
     };
 
     useEffect(() => {
+        const handleKeys = (e: KeyboardEvent) => {
+            if (!selectedNoteId || isRecording || isSaveModalOpen || isLoadModalOpen) return;
+
+            // Handle number keys for frets
+            if (e.key >= '0' && e.key <= '9') {
+                const num = parseInt(e.key);
+                setNotes((prev: TabNote[]) => prev.map(n => n.id === selectedNoteId ? { ...n, fret: num } : n));
+            }
+
+            // Handle Backspace/Delete
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                deleteSelectedNote();
+            }
+
+            // Handle Escape to deselect
+            if (e.key === 'Escape') {
+                setSelectedNoteId(null);
+            }
+        };
+        window.addEventListener('keydown', handleKeys);
+        return () => window.removeEventListener('keydown', handleKeys);
+    }, [selectedNoteId, isRecording, isSaveModalOpen, isLoadModalOpen]);
+
+    useEffect(() => {
         requestRef.current = requestAnimationFrame(moveNotes);
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
@@ -215,10 +239,27 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
             id: Date.now().toString(),
             string: 1, // Base string irrelevant for full bar
             fret: 0,
-            position: 100, // Always at the right (scanner)
+            position: 100 - scrollOffset, // Account for current offset so it appears at scanner
             type: 'bar'
         };
         setNotes((prev: TabNote[]) => [...prev, newBar]);
+        setSelectedNoteId(newBar.id);
+        setIsPaused(true);
+    };
+
+    const handleAddAtScanner = (stringIndex: number) => {
+        if (isRecording) return;
+
+        const newNote: TabNote = {
+            id: Date.now().toString(),
+            string: stringIndex + 1,
+            fret: 0,
+            position: 100 - scrollOffset, // scanner-line is at position 100, but we need to subtract scrollOffset
+        };
+
+        setNotes((prev: TabNote[]) => [...prev, newNote]);
+        setSelectedNoteId(newNote.id);
+        setIsPaused(true);
     };
 
     const handleDeleteSave = (e: React.MouseEvent, id: string) => {
@@ -289,7 +330,13 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                             className="tab-line"
                             onClick={(e) => handleLineClick(e, idx)}
                         >
-                            <span className="string-name">{['e', 'B', 'G', 'D', 'A', 'E'][idx]}</span>
+                            <div
+                                className="string-label-target"
+                                onClick={(e) => { e.stopPropagation(); handleAddAtScanner(idx); }}
+                                title="Click to add note at scanner"
+                            >
+                                <span className="string-name">{['e', 'B', 'G', 'D', 'A', 'E'][idx]}</span>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -388,20 +435,43 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
 
             {selectedNote && !isRecording && (
                 <div className="edit-hud glass" onClick={e => e.stopPropagation()}>
-                    <button className="hud-button" onClick={() => updateSelectedNote({ fret: Math.max(0, selectedNote.fret - 1) })}>
-                        <ChevronDown size={14} />
-                    </button>
-                    <span className="hud-label">Fret: {selectedNote.fret}</span>
-                    <button className="hud-button" onClick={() => updateSelectedNote({ fret: selectedNote.fret + 1 })}>
-                        <ChevronUp size={14} />
-                    </button>
-                    <div className="divider" style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }}></div>
-                    <button className="hud-button" onClick={() => updateSelectedNote({ string: Math.max(1, selectedNote.string - 1) })}>
-                        Str -
-                    </button>
-                    <button className="hud-button" onClick={() => updateSelectedNote({ string: Math.min(6, selectedNote.string + 1) })}>
-                        Str +
-                    </button>
+                    <div className="hud-section">
+                        <button className="hud-button" onClick={() => updateSelectedNote({ fret: Math.max(0, selectedNote.fret - 1) })}>
+                            <ChevronDown size={14} />
+                        </button>
+                        <span className="hud-label">Fret: {selectedNote.fret}</span>
+                        <button className="hud-button" onClick={() => updateSelectedNote({ fret: selectedNote.fret + 1 })}>
+                            <ChevronUp size={14} />
+                        </button>
+                    </div>
+
+                    <div className="v-divider" />
+
+                    <div className="fret-picker">
+                        {[0, 1, 2, 3, 4, 5, 7, 9, 12].map(f => (
+                            <button
+                                key={f}
+                                className={`fret-chip ${selectedNote.fret === f ? 'active' : ''}`}
+                                onClick={() => updateSelectedNote({ fret: f })}
+                            >
+                                {f}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="v-divider" />
+
+                    <div className="hud-section">
+                        <button className="hud-button" onClick={() => updateSelectedNote({ string: Math.max(1, selectedNote.string - 1) })}>
+                            Str -
+                        </button>
+                        <button className="hud-button" onClick={() => updateSelectedNote({ string: Math.min(6, selectedNote.string + 1) })}>
+                            Str +
+                        </button>
+                    </div>
+
+                    <div className="v-divider" />
+
                     <button className="hud-button danger" onClick={deleteSelectedNote}>
                         <Trash2 size={14} />
                     </button>

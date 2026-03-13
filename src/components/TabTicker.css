@@ -252,6 +252,81 @@
 }
 
 /* Modal and Save List for Light Mode */
+.string-label-target {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    cursor: pointer;
+    z-index: 20;
+    transition: background 0.2s;
+    border-radius: 0 4px 4px 0;
+}
+
+.string-label-target:hover {
+    background: rgba(92, 51, 255, 0.08);
+}
+
+.string-name {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.fret-picker {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 2px 0;
+    max-width: 200px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.fret-picker::-webkit-scrollbar {
+    display: none;
+}
+
+.fret-chip {
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    min-width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.fret-chip:hover {
+    border-color: var(--accent-primary);
+    background: white;
+}
+
+.fret-chip.active {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+    box-shadow: 0 2px 8px rgba(92, 51, 255, 0.3);
+}
+
+.hud-section {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .tab-modal-overlay {
     position: fixed;
     top: 0;
