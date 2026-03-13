@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './TabTicker.css';
-import { Trash2, ChevronUp, ChevronDown, Play, Pause, Save, FilePlus, Ruler } from 'lucide-react';
+import { Trash2, ChevronUp, ChevronDown, Play, Pause, Save, FilePlus, Ruler, Plus } from 'lucide-react';
 
 interface TabNote {
     id: string;
@@ -335,6 +335,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                                 onClick={(e) => { e.stopPropagation(); handleAddAtScanner(idx); }}
                                 title="Click to add note at scanner"
                             >
+                                <Plus size={10} className="string-add-icon" />
                                 <span className="string-name">{['e', 'B', 'G', 'D', 'A', 'E'][idx]}</span>
                             </div>
                         </div>

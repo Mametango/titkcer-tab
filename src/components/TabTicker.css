@@ -272,6 +272,17 @@
     background: rgba(92, 51, 255, 0.08);
 }
 
+.string-add-icon {
+    color: var(--accent-primary);
+    margin-right: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.string-label-target:hover .string-add-icon {
+    opacity: 1;
+}
+
 .string-name {
     font-size: 0.65rem;
     color: var(--text-secondary);
