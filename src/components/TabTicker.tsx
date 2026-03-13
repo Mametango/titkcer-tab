@@ -73,6 +73,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
             if (selectedNoteId && !isRecording) return prevNotes;
             if (isPaused && !isRecording) return prevNotes;
 
+            const SCANNER_POS = 20; // 20% from left
             const speed = isRecording || !isPaused ? 0.5 : 0;
             const nextNotes = prevNotes
                 .map((n: TabNote) => ({ ...n, position: n.position - speed }))
@@ -89,7 +90,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                     id: now.toString(),
                     string: currentNote.string,
                     fret: currentNote.fret,
-                    position: 100,
+                    position: SCANNER_POS, // Emerges from scanner
                     type: 'note'
                 } as TabNote);
                 lastNoteRef.current = currentNote;
@@ -185,7 +186,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
             id: Date.now().toString(),
             string: stringIndex + 1,
             fret: 0,
-            position,
+            position: position - scrollOffset,
         };
 
         setNotes((prev: TabNote[]) => [...prev, newNote]);
@@ -342,9 +343,25 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                     ))}
                 </div>
 
-                <div className="scanner-line"></div>
+                <div className="scanner-line">
+                    <div className="scanner-glow"></div>
+                </div>
 
                 <div className="notes-container">
+                    {/* Ghost Note for Real-time Feedback */}
+                    {isRecording && currentNote && (
+                        <div
+                            className="note-bubble ghost-note"
+                            style={{
+                                left: `20%`,
+                                top: `${(currentNote.string - 1) * 30 + 15}px`,
+                                transform: 'translateY(-50%)',
+                            }}
+                        >
+                            {currentNote.fret}
+                        </div>
+                    )}
+
                     {notes.map((note) => (
                         note.type === 'bar' ? (
                             <div
