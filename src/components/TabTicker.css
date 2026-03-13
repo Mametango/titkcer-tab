@@ -230,9 +230,21 @@
     border-radius: 8px;
     padding: 12px;
     color: white;
-    font-size: 1rem;
+    font-size: 16px;
+    /* Prevents iOS auto-zoom */
     outline: none;
     transition: all 0.3s ease;
+    -webkit-appearance: none;
+    /* Premium mobile look */
+}
+
+/* Specific adjustment for mobile layout */
+@media screen and (max-width: 600px) {
+    .tab-modal {
+        position: fixed;
+        top: 20%;
+        /* Shift up to avoid keyboard overlap */
+    }
 }
 
 .tab-modal input:focus {
