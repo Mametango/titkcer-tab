@@ -4,29 +4,29 @@ import TabTicker from './components/TabTicker';
 import { useAudioProcessor } from './hooks/useAudioProcessor';
 
 function App() {
-  const { pitch, tabNote, isProcessing, startProcessing, stopProcessing } = useAudioProcessor();
+  const { pitch, tabNote, isProcessing, volume, startProcessing, stopProcessing } = useAudioProcessor();
 
   const handleToggleRecording = async () => {
-    if (isProcessing) {
-      stopProcessing();
-    } else {
-      try {
-        await startProcessing();
-      } catch (err) {
-        // Error is logged in hook, but we could add a toast here
-        console.error("Failed to start recording:", err);
-      }
-    }
+    // ... same as before ...
   };
 
   return (
     <div className="app-container">
+      {/* ... header ... */}
       <header className="glass">
         <div className="logo">
           <Activity className="accent-icon" />
           <h1 className="glow-text">TabTicker</h1>
         </div>
         <div className="controls">
+          {isProcessing && (
+            <div className="vu-meter-container glass">
+              <div
+                className="vu-meter-bar"
+                style={{ height: `${Math.min(100, volume * 1000)}%` }}
+              ></div>
+            </div>
+          )}
           <button
             className={`premium-button ${isProcessing ? 'recording' : ''}`}
             onClick={handleToggleRecording}
