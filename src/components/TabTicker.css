@@ -180,6 +180,28 @@
     }
 }
 
+.tab-ticker-container.panning {
+    cursor: grabbing !important;
+}
+
+.ticker-scrollbar {
+    position: absolute;
+    bottom: 4px;
+    left: 100px;
+    right: 20px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    z-index: 15;
+}
+
+.ticker-scrollbar-thumb {
+    height: 100%;
+    background: var(--accent-primary);
+    border-radius: 2px;
+    box-shadow: 0 0 5px var(--accent-primary);
+}
+
 /* Modal and Save List */
 .tab-modal-overlay {
     position: fixed;

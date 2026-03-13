@@ -29,13 +29,16 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
     const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
     const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
     const [newSaveName, setNewSaveName] = useState('');
+    const [scrollOffset, setScrollOffset] = useState(0); // in percentage
+    const [isPanning, setIsPanning] = useState(false);
 
     const requestRef = useRef<number | undefined>(undefined);
     const lastNoteRef = useRef<{ string: number; fret: number } | null>(null);
     const lastNoteTime = useRef<number>(0);
     const containerRef = useRef<HTMLDivElement>(null);
+    const panStartRef = useRef<number | null>(null);
 
-    // Initial load of the file list from localStorage
+    // Initial load...
     useEffect(() => {
         const savedList = localStorage.getItem('tabticker_save_list');
         if (savedList) {
@@ -71,7 +74,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
             const speed = isRecording || !isPaused ? 0.5 : 0;
             const nextNotes = prevNotes
                 .map((n) => ({ ...n, position: n.position - speed }))
-                .filter((n) => n.position > -10);
+                .filter((n) => n.position > -500); // Keep more notes for scrolling
 
             const now = Date.now();
             if (isRecording && currentNote && (
@@ -104,8 +107,32 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
         };
     }, [isRecording, currentNote, selectedNoteId, isPaused]);
 
+    // Panning Logic
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (isRecording || selectedNoteId) return;
+        setIsPanning(true);
+        panStartRef.current = e.clientX;
+        setIsPaused(true);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!isPanning || panStartRef.current === null) return;
+        const delta = e.clientX - panStartRef.current;
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+
+        const deltaPercent = (delta / rect.width) * 100;
+        setScrollOffset(prev => prev + deltaPercent);
+        panStartRef.current = e.clientX;
+    };
+
+    const handleMouseUp = () => {
+        setIsPanning(false);
+        panStartRef.current = null;
+    };
+
     const handleContainerClick = () => {
-        if (!selectedNoteId) {
+        if (!selectedNoteId && !isPanning) {
             setIsPaused(!isPaused);
         }
     };
@@ -179,12 +206,23 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
 
     const selectedNote = notes.find(n => n.id === selectedNoteId);
 
+    // Calculate min/max range for scrollbar
+    const minPos = notes.length > 0 ? Math.min(...notes.map(n => n.position)) : 0;
+    const maxPos = notes.length > 0 ? Math.max(...notes.map(n => n.position)) : 100;
+    const scrollRange = maxPos - minPos;
+    const thumbWidth = Math.max(5, (100 / (scrollRange || 100)) * 100);
+    const thumbPos = ((0 - minPos) / (scrollRange || 1 || 100)) * 100;
+
     return (
         <div
-            className="tab-ticker-container"
+            className={`tab-ticker-container ${isPanning ? 'panning' : ''}`}
             ref={containerRef}
             onClick={handleContainerClick}
-            style={{ cursor: isRecording ? 'default' : 'pointer' }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            style={{ cursor: isRecording ? 'default' : (isPanning ? 'grabbing' : 'grab') }}
         >
             <div className={`playback-indicator ${!isPaused || isRecording ? 'playing' : ''}`}>
                 <span></span>
@@ -211,7 +249,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                         key={note.id}
                         className={`note-bubble ${selectedNoteId === note.id ? 'selected' : ''}`}
                         style={{
-                            left: `${note.position}%`,
+                            left: `${note.position + scrollOffset}%`,
                             top: `${(note.string - 1) * 20 + 20}px`,
                             transform: 'translateY(-50%)',
                         }}
@@ -221,6 +259,19 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                     </div>
                 ))}
             </div>
+
+            {notes.length > 10 && (
+                <div className="ticker-scrollbar">
+                    <div
+                        className="ticker-scrollbar-thumb"
+                        style={{
+                            width: `${Math.min(100, thumbWidth)}%`,
+                            left: `${Math.max(0, Math.min(100 - thumbWidth, thumbPos))}%`,
+                            position: 'absolute'
+                        }}
+                    />
+                </div>
+            )}
 
             <div className="ticker-controls" style={{ position: 'absolute', top: '10px', left: '20px', display: 'flex', gap: '8px', zIndex: 20 }}>
                 <button className={`hud-button ${isPaused ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setIsPaused(!isPaused); }}>
