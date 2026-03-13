@@ -248,88 +248,92 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
             onMouseLeave={handleMouseUp}
             style={{ cursor: isRecording ? 'default' : (isPanning ? 'grabbing' : 'grab') }}
         >
-            <div className="ticker-top-bar">
-                <div className={`playback-indicator ${!isPaused || isRecording ? 'playing' : ''}`}>
-                    <span></span>
-                    {!isPaused || isRecording ? 'PLAYING' : 'PAUSED'}
+            <div className="tab-ticker-header">
+                <div className="ticker-controls">
+                    <button className="hud-button" onClick={(e) => { e.stopPropagation(); handleNew(); }}>
+                        <FilePlus size={14} />
+                        New
+                    </button>
+                    <div className="v-divider" />
+                    <button className={`hud-button ${isPaused ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setIsPaused(!isPaused); }}>
+                        {isPaused ? <Play size={14} /> : <Pause size={14} />}
+                    </button>
+                    <button className="hud-button" onClick={(e) => { e.stopPropagation(); addBarLine(); }}>
+                        <Ruler size={14} />
+                        Bar
+                    </button>
+                    <button className="hud-button" onClick={(e) => { e.stopPropagation(); setIsSaveModalOpen(true); setIsPaused(true); }}>
+                        <Save size={14} />
+                        Save
+                    </button>
+                    <button className="hud-button" onClick={(e) => { e.stopPropagation(); setIsLoadModalOpen(true); setIsPaused(true); }}>
+                        <Play size={14} style={{ transform: 'rotate(90deg)' }} />
+                        Load
+                    </button>
                 </div>
-                {activeTabName && <div className="active-tab-title">{activeTabName}</div>}
-            </div>
 
-            <div className="tab-lines">
-                {[0, 1, 2, 3, 4, 5].map((idx) => (
-                    <div
-                        key={idx}
-                        className="tab-line"
-                        onClick={(e) => handleLineClick(e, idx)}
-                    >
-                        <span className="string-name">{['e', 'B', 'G', 'D', 'A', 'E'][idx]}</span>
+                <div className="ticker-top-bar">
+                    <div className={`playback-indicator ${!isPaused || isRecording ? 'playing' : ''}`}>
+                        <span></span>
+                        {!isPaused || isRecording ? 'PLAYING' : 'PAUSED'}
                     </div>
-                ))}
-            </div>
-
-            <div className="scanner-line"></div>
-
-            <div className="notes-container">
-                {notes.map((note) => (
-                    note.type === 'bar' ? (
-                        <div
-                            key={note.id}
-                            className={`bar-line ${selectedNoteId === note.id ? 'selected' : ''}`}
-                            style={{ left: `${note.position + scrollOffset}%` }}
-                            onClick={(e) => handleNoteClick(e, note.id)}
-                        />
-                    ) : (
-                        <div
-                            key={note.id}
-                            className={`note-bubble ${selectedNoteId === note.id ? 'selected' : ''}`}
-                            style={{
-                                left: `${note.position + scrollOffset}%`,
-                                top: `${(note.string - 1) * 30 + 15}px`,
-                                transform: 'translateY(-50%)',
-                            }}
-                            onClick={(e) => handleNoteClick(e, note.id)}
-                        >
-                            {note.fret}
-                        </div>
-                    )
-                ))}
-            </div>
-
-            {notes.length > 10 && (
-                <div className="ticker-scrollbar">
-                    <div
-                        className="ticker-scrollbar-thumb"
-                        style={{
-                            width: `${Math.min(100, thumbWidth)}%`,
-                            left: `${Math.max(0, Math.min(100 - thumbWidth, thumbPos))}%`,
-                            position: 'absolute'
-                        }}
-                    />
+                    {activeTabName && <div className="active-tab-title">{activeTabName}</div>}
                 </div>
-            )}
+            </div>
 
-            <div className="ticker-controls" style={{ position: 'absolute', top: '15px', left: '20px', display: 'flex', gap: '8px', zIndex: 20 }}>
-                <button className="hud-button" onClick={(e) => { e.stopPropagation(); handleNew(); }}>
-                    <FilePlus size={14} />
-                    New
-                </button>
-                <div className="v-divider" />
-                <button className={`hud-button ${isPaused ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setIsPaused(!isPaused); }}>
-                    {isPaused ? <Play size={14} /> : <Pause size={14} />}
-                </button>
-                <button className="hud-button" onClick={(e) => { e.stopPropagation(); addBarLine(); }}>
-                    <Ruler size={14} />
-                    Bar
-                </button>
-                <button className="hud-button" onClick={(e) => { e.stopPropagation(); setIsSaveModalOpen(true); setIsPaused(true); }}>
-                    <Save size={14} />
-                    Save
-                </button>
-                <button className="hud-button" onClick={(e) => { e.stopPropagation(); setIsLoadModalOpen(true); setIsPaused(true); }}>
-                    <Play size={14} style={{ transform: 'rotate(90deg)' }} />
-                    Load
-                </button>
+            <div className="tab-ticker-score-area">
+                <div className="tab-lines">
+                    {[0, 1, 2, 3, 4, 5].map((idx) => (
+                        <div
+                            key={idx}
+                            className="tab-line"
+                            onClick={(e) => handleLineClick(e, idx)}
+                        >
+                            <span className="string-name">{['e', 'B', 'G', 'D', 'A', 'E'][idx]}</span>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="scanner-line"></div>
+
+                <div className="notes-container">
+                    {notes.map((note) => (
+                        note.type === 'bar' ? (
+                            <div
+                                key={note.id}
+                                className={`bar-line ${selectedNoteId === note.id ? 'selected' : ''}`}
+                                style={{ left: `${note.position + scrollOffset}%` }}
+                                onClick={(e) => handleNoteClick(e, note.id)}
+                            />
+                        ) : (
+                            <div
+                                key={note.id}
+                                className={`note-bubble ${selectedNoteId === note.id ? 'selected' : ''}`}
+                                style={{
+                                    left: `${note.position + scrollOffset}%`,
+                                    top: `${(note.string - 1) * 30 + 15}px`,
+                                    transform: 'translateY(-50%)',
+                                }}
+                                onClick={(e) => handleNoteClick(e, note.id)}
+                            >
+                                {note.fret}
+                            </div>
+                        )
+                    ))}
+                </div>
+
+                {notes.length > 10 && (
+                    <div className="ticker-scrollbar">
+                        <div
+                            className="ticker-scrollbar-thumb"
+                            style={{
+                                width: `${Math.min(100, thumbWidth)}%`,
+                                left: `${Math.max(0, Math.min(100 - thumbWidth, thumbPos))}%`,
+                                position: 'absolute'
+                            }}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Save Modal */}

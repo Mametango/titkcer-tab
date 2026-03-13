@@ -1,38 +1,65 @@
 .tab-ticker-container {
     position: relative;
-    height: 240px;
+    height: auto;
+    min-height: 240px;
     width: 100%;
     overflow: hidden;
     background: var(--bg-secondary);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
 }
 
-.ticker-top-bar {
-    position: absolute;
-    top: 15px;
-    right: 20px;
+.tab-ticker-header {
+    padding: 12px 16px;
+    background: white;
+    border-bottom: 1px solid var(--glass-border);
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    gap: 12px;
     z-index: 30;
 }
 
+.ticker-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.ticker-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
 .active-tab-title {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--accent-primary);
-    background: white;
-    padding: 4px 12px;
+    background: var(--bg-secondary);
+    padding: 4px 10px;
     border-radius: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--glass-border);
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tab-ticker-score-area {
+    position: relative;
+    height: 200px;
+    width: 100%;
+    overflow: hidden;
 }
 
 .tab-lines {
     position: absolute;
-    top: 60px;
+    top: 20px;
     left: 0;
     right: 0;
     bottom: 20px;
@@ -64,9 +91,9 @@
 
 .string-name {
     position: absolute;
-    left: 10px;
+    left: 8px;
     top: -8px;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--text-secondary);
     font-weight: bold;
 }
@@ -74,8 +101,8 @@
 .scanner-line {
     position: absolute;
     left: 100px;
-    top: 60px;
-    bottom: 20px;
+    top: 0;
+    bottom: 0;
     width: 2px;
     background: var(--accent-secondary);
     box-shadow: 0 0 10px var(--accent-secondary);
@@ -84,7 +111,7 @@
 
 .notes-container {
     position: absolute;
-    top: 60px;
+    top: 20px;
     left: 0;
     right: 0;
     bottom: 20px;
@@ -137,15 +164,15 @@
 
 .edit-hud {
     position: absolute;
-    bottom: 25px;
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 8px;
-    padding: 8px;
+    gap: 6px;
+    padding: 6px;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
     border: 1px solid var(--glass-border);
     z-index: 200;
     align-items: center;
@@ -155,14 +182,14 @@
     background: var(--bg-secondary);
     border: 1px solid var(--glass-border);
     color: var(--text-primary);
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     transition: all 0.2s;
 }
 
@@ -179,17 +206,17 @@
 
 .v-divider {
     width: 1px;
-    height: 20px;
+    height: 16px;
     background: var(--glass-border);
-    margin: 0 4px;
+    margin: 0 2px;
 }
 
 .playback-indicator {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     color: var(--text-secondary);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     pointer-events: none;
 }
@@ -276,6 +303,15 @@
     box-shadow: 0 0 0 4px rgba(92, 51, 255, 0.1);
 }
 
+.save-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
 .save-item {
     background: white;
     border: 1px solid var(--glass-border);
@@ -294,15 +330,83 @@
     transform: translateX(4px);
 }
 
+.save-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .save-name {
     color: var(--text-primary);
     font-weight: 700;
+    font-size: 1rem;
 }
 
 .save-date {
     color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+.empty-msg {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.premium-button {
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.premium-button:hover:not(:disabled) {
+    background: #4a28cc;
+    transform: translateY(-2px);
+}
+
+.premium-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .tab-ticker-container.panning {
     cursor: grabbing !important;
+}
+
+@media screen and (max-width: 600px) {
+    .tab-ticker-header {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+
+    .ticker-controls {
+        gap: 6px;
+    }
+
+    .hud-button {
+        padding: 5px 8px;
+        font-size: 0.7rem;
+    }
+
+    .tab-ticker-score-area {
+        height: 180px;
+    }
+
+    .tab-lines,
+    .notes-container {
+        top: 15px;
+        bottom: 15px;
+    }
 }
