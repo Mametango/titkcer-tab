@@ -3,14 +3,36 @@
     height: 240px;
     width: 100%;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.ticker-top-bar {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 30;
+}
+
+.active-tab-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    background: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--glass-border);
 }
 
 .tab-lines {
     position: absolute;
     top: 60px;
-    /* Leave space for controls at top */
     left: 0;
     right: 0;
     bottom: 20px;
@@ -21,7 +43,6 @@
 
 .tab-line {
     height: 30px;
-    /* Fixed height for consistent grid */
     background: transparent;
     width: 100%;
     position: relative;
@@ -33,7 +54,7 @@
 .tab-line::after {
     content: "";
     height: 1px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.08);
     width: 100%;
     position: absolute;
     top: 50%;
@@ -56,8 +77,8 @@
     top: 60px;
     bottom: 20px;
     width: 2px;
-    background: linear-gradient(to bottom, transparent, var(--accent-secondary), transparent);
-    box-shadow: 0 0 15px var(--accent-secondary);
+    background: var(--accent-secondary);
+    box-shadow: 0 0 10px var(--accent-secondary);
     z-index: 10;
 }
 
@@ -71,18 +92,18 @@
 
 .note-bubble {
     position: absolute;
-    width: 24px;
-    height: 24px;
-    background: var(--accent-primary);
-    color: white;
+    width: 26px;
+    height: 26px;
+    background: white;
+    color: var(--text-primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
-    font-weight: bold;
-    box-shadow: 0 0 10px var(--accent-primary);
-    border: 2px solid white;
+    font-size: 0.85rem;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2.5px solid var(--accent-primary);
     cursor: pointer;
     z-index: 5;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -93,123 +114,125 @@
 }
 
 .note-bubble.selected {
-    background: var(--accent-secondary);
-    box-shadow: 0 0 20px var(--accent-secondary);
-    transform: translateY(-50%) scale(1.2);
-    border-color: white;
+    background: var(--accent-primary);
+    color: white;
+    transform: translateY(-50%) scale(1.25);
     z-index: 100;
+}
+
+.bar-line {
+    position: absolute;
+    width: 3px;
+    top: 0;
+    bottom: 0;
+    background: #1a1a20;
+    cursor: pointer;
+    z-index: 4;
+}
+
+.bar-line.selected {
+    background: var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-primary);
 }
 
 .edit-hud {
     position: absolute;
-    bottom: 20px;
+    bottom: 25px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 12px;
-    padding: 8px 16px;
+    gap: 8px;
+    padding: 8px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--glass-border);
     z-index: 200;
     align-items: center;
 }
 
 .hud-button {
-    background: var(--glass-bg);
+    background: var(--bg-secondary);
     border: 1px solid var(--glass-border);
-    color: white;
+    color: var(--text-primary);
     padding: 6px 12px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.8rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    transition: all 0.2s;
 }
 
 .hud-button:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
 }
 
 .hud-button.active {
-    background: var(--accent-secondary);
-    border-color: white;
+    background: var(--accent-primary);
+    color: white;
 }
 
-.hud-button.danger:hover {
-    background: var(--danger);
-    border-color: var(--danger);
+.v-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--glass-border);
+    margin: 0 4px;
 }
 
 .playback-indicator {
-    position: absolute;
-    top: 10px;
-    right: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
     color: var(--text-secondary);
     font-size: 0.75rem;
+    font-weight: 700;
     pointer-events: none;
-    z-index: 10;
 }
 
 .playback-indicator span {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #444;
+    background: #ccc;
 }
 
 .playback-indicator.playing span {
-    background: #4caf50;
-    box-shadow: 0 0 8px #4caf50;
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
     animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        opacity: 0.5;
-    }
-
-    50% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0.5;
-    }
-}
-
-.tab-ticker-container.panning {
-    cursor: grabbing !important;
 }
 
 .ticker-scrollbar {
     position: absolute;
-    bottom: 4px;
-    left: 100px;
-    right: 20px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 2px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.03);
     z-index: 15;
 }
 
 .ticker-scrollbar-thumb {
     height: 100%;
     background: var(--accent-primary);
-    border-radius: 2px;
-    box-shadow: 0 0 5px var(--accent-primary);
+    border-radius: 3px;
+    opacity: 0.6;
 }
 
-/* Modal and Save List */
+/* Modal and Save List for Light Mode */
 .tab-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -217,130 +240,69 @@
 }
 
 .tab-modal {
-    width: 400px;
+    background: white;
+    width: 440px;
     max-width: 90vw;
-    padding: 24px;
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--glass-border);
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes modalScale {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
+    gap: 20px;
 }
 
 .tab-modal h3 {
     margin: 0;
-    font-size: 1.2rem;
-    color: var(--accent-primary);
-    text-shadow: 0 0 10px var(--accent-primary);
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    font-weight: 800;
 }
 
 .tab-modal input {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 12px;
-    color: white;
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px;
+    color: var(--text-primary);
     font-size: 16px;
-    /* Prevents iOS auto-zoom */
     outline: none;
-    transition: all 0.3s ease;
-    -webkit-appearance: none;
-    /* Premium mobile look */
-}
-
-/* Specific adjustment for mobile layout */
-@media screen and (max-width: 600px) {
-    .tab-modal-overlay {
-        align-items: flex-start;
-        padding-top: 80px;
-        overflow-y: auto;
-    }
-
-    .tab-modal {
-        animation: none;
-        /* Disable animation to avoid jitter on mobile keyboard */
-        margin-bottom: 40px;
-    }
+    transition: all 0.2s;
 }
 
 .tab-modal input:focus {
     border-color: var(--accent-primary);
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-}
-
-.save-list {
-    max-height: 300px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-right: 4px;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(92, 51, 255, 0.1);
 }
 
 .save-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 12px;
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
 }
 
 .save-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
-}
-
-.save-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    background: var(--bg-secondary);
+    border-color: var(--accent-primary);
+    transform: translateX(4px);
 }
 
 .save-name {
-    font-weight: 600;
-    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: 700;
 }
 
 .save-date {
-    font-size: 0.75rem;
-    opacity: 0.5;
+    color: var(--text-secondary);
 }
 
-.empty-msg {
-    text-align: center;
-    padding: 20px;
-    opacity: 0.5;
-    font-style: italic;
-}
-
-/* Custom Scrollbar */
-.save-list::-webkit-scrollbar {
-    width: 4px;
-}
-
-.save-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
+.tab-ticker-container.panning {
+    cursor: grabbing !important;
 }

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './TabTicker.css';
-import { Trash2, ChevronUp, ChevronDown, Play, Pause, Save } from 'lucide-react';
+import { Trash2, ChevronUp, ChevronDown, Play, Pause, Save, FilePlus, Ruler } from 'lucide-react';
 
 interface TabNote {
     id: string;
     string: number; // 1-6
     fret: number;
     position: number; // 0-100 (percentage from left)
+    type?: 'note' | 'bar';
 }
 
 interface SavedTab {
@@ -31,6 +32,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
     const [newSaveName, setNewSaveName] = useState('');
     const [scrollOffset, setScrollOffset] = useState(0); // in percentage
     const [isPanning, setIsPanning] = useState(false);
+    const [activeTabName, setActiveTabName] = useState<string | null>(null);
 
     const requestRef = useRef<number | undefined>(undefined);
     const lastNoteRef = useRef<{ string: number; fret: number } | null>(null);
@@ -66,15 +68,15 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
     }, [notes]);
 
     const moveNotes = () => {
-        setNotes((prevNotes) => {
+        setNotes((prevNotes: TabNote[]) => {
             // Priority: selected note (static mode) > manual pause > movement
             if (selectedNoteId && !isRecording) return prevNotes;
             if (isPaused && !isRecording) return prevNotes;
 
             const speed = isRecording || !isPaused ? 0.5 : 0;
             const nextNotes = prevNotes
-                .map((n) => ({ ...n, position: n.position - speed }))
-                .filter((n) => n.position > -500); // Keep more notes for scrolling
+                .map((n: TabNote) => ({ ...n, position: n.position - speed }))
+                .filter((n: TabNote) => n.position > -500); // Keep more notes for scrolling
 
             const now = Date.now();
             if (isRecording && currentNote && (
@@ -88,7 +90,8 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
                     string: currentNote.string,
                     fret: currentNote.fret,
                     position: 100,
-                });
+                    type: 'note'
+                } as TabNote);
                 lastNoteRef.current = currentNote;
                 lastNoteTime.current = now;
             } else if (!currentNote) {
@@ -131,6 +134,7 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
         panStartRef.current = null;
     };
 
+
     const handleContainerClick = () => {
         if (!selectedNoteId && !isPanning) {
             setIsPaused(!isPaused);
@@ -160,17 +164,17 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
             position,
         };
 
-        setNotes(prev => [...prev, newNote]);
+        setNotes((prev: TabNote[]) => [...prev, newNote]);
         setSelectedNoteId(newNote.id);
         setIsPaused(true);
     };
 
     const updateSelectedNote = (update: Partial<TabNote>) => {
-        setNotes(prev => prev.map(n => n.id === selectedNoteId ? { ...n, ...update } : n));
+        setNotes((prev: TabNote[]) => prev.map((n: TabNote) => n.id === selectedNoteId ? { ...n, ...update } : n));
     };
 
     const deleteSelectedNote = () => {
-        setNotes(prev => prev.filter(n => n.id !== selectedNoteId));
+        setNotes((prev: TabNote[]) => prev.filter((n: TabNote) => n.id !== selectedNoteId));
         setSelectedNoteId(null);
     };
 
@@ -192,9 +196,29 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
 
     const handleLoad = (tab: SavedTab) => {
         setNotes(tab.notes);
+        setActiveTabName(tab.name);
         setIsLoadModalOpen(false);
         setIsPaused(true);
-        alert(`Loaded "${tab.name}"`);
+        setScrollOffset(0);
+    };
+
+    const handleNew = () => {
+        if (notes.length > 0 && !window.confirm("Clear current session?")) return;
+        setNotes([]);
+        setActiveTabName(null);
+        setScrollOffset(0);
+        setIsPaused(false);
+    };
+
+    const addBarLine = () => {
+        const newBar: TabNote = {
+            id: Date.now().toString(),
+            string: 1, // Base string irrelevant for full bar
+            fret: 0,
+            position: 100, // Always at the right (scanner)
+            type: 'bar'
+        };
+        setNotes((prev: TabNote[]) => [...prev, newBar]);
     };
 
     const handleDeleteSave = (e: React.MouseEvent, id: string) => {
@@ -224,9 +248,12 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
             onMouseLeave={handleMouseUp}
             style={{ cursor: isRecording ? 'default' : (isPanning ? 'grabbing' : 'grab') }}
         >
-            <div className={`playback-indicator ${!isPaused || isRecording ? 'playing' : ''}`}>
-                <span></span>
-                {!isPaused || isRecording ? 'PLAYING' : 'PAUSED'}
+            <div className="ticker-top-bar">
+                <div className={`playback-indicator ${!isPaused || isRecording ? 'playing' : ''}`}>
+                    <span></span>
+                    {!isPaused || isRecording ? 'PLAYING' : 'PAUSED'}
+                </div>
+                {activeTabName && <div className="active-tab-title">{activeTabName}</div>}
             </div>
 
             <div className="tab-lines">
@@ -245,18 +272,27 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
 
             <div className="notes-container">
                 {notes.map((note) => (
-                    <div
-                        key={note.id}
-                        className={`note-bubble ${selectedNoteId === note.id ? 'selected' : ''}`}
-                        style={{
-                            left: `${note.position + scrollOffset}%`,
-                            top: `${(note.string - 1) * 30 + 15}px`,
-                            transform: 'translateY(-50%)',
-                        }}
-                        onClick={(e) => handleNoteClick(e, note.id)}
-                    >
-                        {note.fret}
-                    </div>
+                    note.type === 'bar' ? (
+                        <div
+                            key={note.id}
+                            className={`bar-line ${selectedNoteId === note.id ? 'selected' : ''}`}
+                            style={{ left: `${note.position + scrollOffset}%` }}
+                            onClick={(e) => handleNoteClick(e, note.id)}
+                        />
+                    ) : (
+                        <div
+                            key={note.id}
+                            className={`note-bubble ${selectedNoteId === note.id ? 'selected' : ''}`}
+                            style={{
+                                left: `${note.position + scrollOffset}%`,
+                                top: `${(note.string - 1) * 30 + 15}px`,
+                                transform: 'translateY(-50%)',
+                            }}
+                            onClick={(e) => handleNoteClick(e, note.id)}
+                        >
+                            {note.fret}
+                        </div>
+                    )
                 ))}
             </div>
 
@@ -274,12 +310,21 @@ const TabTicker: React.FC<TabTickerProps> = ({ currentNote, isRecording }) => {
             )}
 
             <div className="ticker-controls" style={{ position: 'absolute', top: '15px', left: '20px', display: 'flex', gap: '8px', zIndex: 20 }}>
+                <button className="hud-button" onClick={(e) => { e.stopPropagation(); handleNew(); }}>
+                    <FilePlus size={14} />
+                    New
+                </button>
+                <div className="v-divider" />
                 <button className={`hud-button ${isPaused ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setIsPaused(!isPaused); }}>
                     {isPaused ? <Play size={14} /> : <Pause size={14} />}
                 </button>
+                <button className="hud-button" onClick={(e) => { e.stopPropagation(); addBarLine(); }}>
+                    <Ruler size={14} />
+                    Bar
+                </button>
                 <button className="hud-button" onClick={(e) => { e.stopPropagation(); setIsSaveModalOpen(true); setIsPaused(true); }}>
                     <Save size={14} />
-                    Save As
+                    Save
                 </button>
                 <button className="hud-button" onClick={(e) => { e.stopPropagation(); setIsLoadModalOpen(true); setIsPaused(true); }}>
                     <Play size={14} style={{ transform: 'rotate(90deg)' }} />
